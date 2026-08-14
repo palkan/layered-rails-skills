@@ -2,6 +2,8 @@
 
 ## master
 
+- Added [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) install path: the layered-rails skill tree now also ships as the `layered-rails-skills` gem. `SKILL.md` renders from an ERB master, and each reference manual under `references/gems/` installs only when its target gem is in the app's bundle.
+
 ## 2.0.1 (2026-05-20)
 
 - Tightened `/layered-rails:analyze-services` "models-first variant" verdict: a single application-shaped class under `app/models/` (HTTP client, LLM caller, job-enqueuer, transport wrapper) now disqualifies the mature-decomposition exit and forces a Mixed verdict

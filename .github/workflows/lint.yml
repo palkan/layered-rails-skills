@@ -17,3 +17,21 @@ jobs:
 
       - name: Lint SKILL.md and plugin files
         run: python3 scripts/lint-skills.py
+
+  skill-freshness:
+    name: Canonical skill freshness
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails-hyperdrive/layered-rails
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: rails-hyperdrive/layered-rails
+
+      - name: Verify SKILL.md matches its template
+        run: bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"

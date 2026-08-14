@@ -9,6 +9,8 @@ Agentic guidance for developing skills in this repo. Skills _usage_ lives in eac
   - `agents/` — agents launched by commands or directly
   - `skills/<skill>/` — `SKILL.md` + `references/` + `examples/`
   - `.claude-plugin/plugin.json` — plugin manifest
+- `<plugin>-skills.gemspec` — packages the plugin's skill tree as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
+- `rails-hyperdrive/<plugin>/` — that gem's tooling: `templates/<skill>/SKILL.md.erb` (ERB master the skill's `SKILL.md` is rendered from — see Rendered skills), plus its `Gemfile` and `Rakefile`
 - `.claude-plugin/marketplace.json` — top-level marketplace manifest
 - `scripts/lint-skills.py` — skill linter (rules described in its docstring)
 - `lefthook.yml` — runs the linter pre-commit
@@ -60,12 +62,25 @@ lint-skip:
     reason: 'comprehensive trigger list is intentional'
 ```
 
+## Rendered skills
+
+`layered-rails/skills/layered-rails/SKILL.md` is generated from `rails-hyperdrive/layered-rails/templates/layered-rails/SKILL.md.erb` — edit the template, never the rendered file, then regenerate:
+
+```bash
+cd rails-hyperdrive/layered-rails
+bundle exec rake "hyperdrive:skills:render[../../layered-rails-skills.gemspec]"   # rewrite SKILL.md from the template
+bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"    # freshness gate — fails when they drift (also runs in CI)
+```
+
+Supporting files (`workflows/`, `references/`, `examples/`) have no templates and are edited directly.
+
 ## Versioning and release
 
-SemVer. Bump the version in **both** manifests, kept in sync:
+SemVer. Bump the version in **all three** places, kept in sync:
 
 - `<plugin>/.claude-plugin/plugin.json` → `version`
 - `.claude-plugin/marketplace.json` → `metadata.version` **and** matching `plugins[].version`
+- `layered-rails-skills.gemspec` → `spec.version`
 
 Bump rules:
 

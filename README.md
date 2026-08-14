@@ -35,6 +35,21 @@ npx skills add palkan/skills --skill layered-rails
 
 skills.sh delivers the `skills/layered-rails/` tree — `SKILL.md`, `workflows/`, `references/`, and `examples/`. The `/layered-rails:*` slash commands and the `layered-rails-planner` / `layered-rails-reviewer` sub-agent registrations are not part of the skill spec and won't be copied, but every workflow they wrap is in `workflows/` and can be invoked by name in plain language ("run the layered-rails review workflow on this diff"). Use this path when you want the same skill in Codex, the Claude API, or any other agent that supports skills.sh; use `/plugin install` when you want the slash commands.
 
+**Install via [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) (Rails apps — bundle-aware skill content):**
+
+```ruby
+group :development do
+  gem "rails-hyperdrive"
+  gem "layered-rails-skills"
+end
+```
+
+```sh
+bin/rails hyperdrive:init
+```
+
+Installs the same skill tree into `.claude/skills/layered-rails/`, tailored to the app's bundle: the architecture core installs into any Rails app, while each per-gem reference manual under `references/gems/` (Action Policy, ViewComponent, Alba, …) installs only when its gem is in the app's `Gemfile.lock` — and `SKILL.md`'s Gem References table lists only what was installed. `bin/rails hyperdrive:sync` picks up updates on gem upgrades.
+
 ### Integration with compound-engineering
 
 We recommend asking Claude itself to update the instructions for Compound Engineering to include Layered Design features according to your needs. Below you can find some examples.
