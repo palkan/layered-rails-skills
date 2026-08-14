@@ -76,11 +76,12 @@ Supporting files (`workflows/`, `references/`, `examples/`) have no templates an
 
 ## Versioning and release
 
-SemVer. Bump the version in **all three** places, kept in sync:
+SemVer. Bump the version in **both** places, kept in sync:
 
 - `<plugin>/.claude-plugin/plugin.json` → `version`
 - `.claude-plugin/marketplace.json` → `metadata.version` **and** matching `plugins[].version`
-- `layered-rails-skills.gemspec` → `spec.version`
+
+`layered-rails-skills.gemspec` reads its version from `plugin.json` at build time, so the gem follows automatically.
 
 Bump rules:
 
