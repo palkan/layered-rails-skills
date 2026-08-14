@@ -19,7 +19,7 @@ jobs:
         run: python3 scripts/lint-skills.py
 
   skill-freshness:
-    name: Canonical skill freshness
+    name: Rendered skills freshness
     runs-on: ubuntu-latest
     defaults:
       run:
