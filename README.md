@@ -39,7 +39,7 @@ skills.sh delivers the `skills/layered-rails/` tree — `SKILL.md`, `workflows/`
 
 ```ruby
 group :development do
-  gem "rails-hyperdrive"
+  gem "rails-hyperdrive", ">= 0.5"
   gem "layered-rails-skills"
 end
 ```
@@ -48,7 +48,7 @@ end
 bin/rails hyperdrive:init
 ```
 
-Installs the same skill tree into `.claude/skills/layered-rails/`, tailored to the app's bundle: the architecture core installs into any Rails app, while each per-gem reference manual under `references/gems/` (Action Policy, ViewComponent, Alba, …) installs only when its gem is in the app's `Gemfile.lock` — and `SKILL.md`'s Gem References table lists only what was installed. `bin/rails hyperdrive:sync` picks up updates on gem upgrades.
+Installs the same skill tree into `.claude/skills/layered-rails/`, tailored to the app's bundle: the architecture core installs into any Rails app, while each per-gem reference manual under `references/gems/` (Action Policy, ViewComponent, Alba, …) installs only when its gem is in the app's `Gemfile.lock` — gating declared in [`hyperdrive.yml`](hyperdrive.yml) at the repo root — and `SKILL.md`'s Gem References table lists only what was installed. `bin/rails hyperdrive:sync` picks up updates on gem upgrades.
 
 ### Integration with compound-engineering
 

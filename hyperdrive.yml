@@ -1,0 +1,24 @@
+gem: railties
+versions: ">= 7.0"
+
+skills:
+  layered-rails:
+    conditional:
+      references/gems/action-policy.md:
+        gem: "action_policy"
+      references/gems/view-component.md:
+        gem: "view_component"
+      references/gems/anyway-config.md:
+        gem: "anyway_config"
+      references/gems/active-delivery.md:
+        gem: "active_delivery"
+      references/gems/alba.md:
+        gem: "alba"
+      references/gems/workflow.md:
+        gem: "workflow, workflow-activerecord"
+      references/gems/rubanok.md:
+        gem: "rubanok"
+      references/gems/active-agent.md:
+        gem: "activeagent"
+      references/gems/active-job-performs.md:
+        gem: "active_job-performs"

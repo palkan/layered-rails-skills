@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
-  spec.files = Dir["layered-rails/skills/**/*", "rails-hyperdrive/layered-rails/templates/**/*"]
+  spec.files = Dir["layered-rails/skills/**/*", "rails-hyperdrive/layered-rails/templates/**/*"] + ["hyperdrive.yml"]
 
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["rubygems_mfa_required"] = "true"

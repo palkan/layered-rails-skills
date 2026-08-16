@@ -10,6 +10,7 @@ Agentic guidance for developing skills in this repo. Skills _usage_ lives in eac
   - `skills/<skill>/` — `SKILL.md` + `references/` + `examples/`
   - `.claude-plugin/plugin.json` — plugin manifest
 - `<plugin>-skills.gemspec` — packages the plugin's skill tree as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
+- `hyperdrive.yml` — gem-root manifest declaring rails-hyperdrive install gating: which gem(s)/version(s) a skill requires, and which supporting files install only when a given gem is bundled. Keyed by skill-dir relpath from the skills root (`layered-rails/skills`) — see Rendered skills
 - `rails-hyperdrive/<plugin>/` — that gem's tooling: `templates/<skill>/SKILL.md.erb` (ERB master the skill's `SKILL.md` is rendered from — see Rendered skills), plus its `Gemfile` and `Rakefile`
 - `.claude-plugin/marketplace.json` — top-level marketplace manifest
 - `scripts/lint-skills.py` — skill linter (rules described in its docstring)
@@ -64,7 +65,7 @@ lint-skip:
 
 ## Rendered skills
 
-`layered-rails/skills/layered-rails/SKILL.md` is generated from `rails-hyperdrive/layered-rails/templates/layered-rails/SKILL.md.erb` — edit the template, never the rendered file, then regenerate:
+`layered-rails/skills/layered-rails/SKILL.md` is generated from `rails-hyperdrive/layered-rails/templates/layered-rails/SKILL.md.erb` — edit the template, never the rendered file, then regenerate.
 
 ```bash
 cd rails-hyperdrive/layered-rails
