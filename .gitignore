@@ -1,6 +1,7 @@
 /.bundle/
 /Gemfile.lock
 /gemfiles/*.lock
+/rails-hyperdrive/*/Gemfile.lock
 /pkg/
 /tmp/
 /log/
