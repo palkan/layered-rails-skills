@@ -2,7 +2,7 @@
 
 ## master
 
-- Added [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) install path: the layered-rails skill tree now also ships as the `layered-rails-skills` gem. `SKILL.md` renders from an ERB master, and each reference manual under `references/gems/` installs only when its target gem is in the app's bundle — gating declared in the gem-root `hyperdrive.yml` manifest, requires rails-hyperdrive `>= 0.5`.
+- Added [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) install path: the layered-rails skill tree now also ships as the `rails-hyperdrive-layered-rails` gem. `SKILL.md` renders from an ERB master, and each reference manual under `references/gems/` installs only when its target gem is in the app's bundle — gating declared in the gem-root `hyperdrive.yml` manifest, requires rails-hyperdrive `>= 0.5`.
 
 ## 2.0.1 (2026-05-20)
 

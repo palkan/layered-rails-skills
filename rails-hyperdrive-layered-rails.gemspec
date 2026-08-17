@@ -1,7 +1,7 @@
 require "json"
 
 Gem::Specification.new do |spec|
-  spec.name    = "layered-rails-skills"
+  spec.name    = "rails-hyperdrive-layered-rails"
   spec.version = JSON.parse(
     File.read(File.expand_path("layered-rails/.claude-plugin/plugin.json", __dir__))
   )["version"]

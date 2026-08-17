@@ -34,4 +34,4 @@ jobs:
           working-directory: rails-hyperdrive/layered-rails
 
       - name: Verify SKILL.md matches its template
-        run: bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"
+        run: bundle exec rake "hyperdrive:skills:check[../../rails-hyperdrive-layered-rails.gemspec]"
