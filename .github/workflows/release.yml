@@ -1,0 +1,59 @@
+name: Release
+
+# Publishing authenticates via RubyGems Trusted Publishing, which needs a
+# trusted publisher entry for the layered-rails-skills gem naming this repo,
+# this workflow file, and the `release` environment. Without it the publish
+# step fails to authenticate.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  verify:
+    name: Rendered skills freshness
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rails-hyperdrive/layered-rails
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: rails-hyperdrive/layered-rails
+
+      - name: Verify SKILL.md matches its template
+        run: bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"
+
+  release:
+    name: Publish to RubyGems
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write   # push the release tag
+      id-token: write   # mint the RubyGems OIDC token
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      # `rake release` derives the version it publishes from plugin.json, not
+      # from the tag that triggered this run. A mismatch would silently publish
+      # the wrong version and push a second tag for it.
+      - name: Assert the tag matches the gem version
+        run: |
+          version=$(ruby -e 'print Gem::Specification.load("layered-rails-skills.gemspec").version')
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match version $version from layered-rails/.claude-plugin/plugin.json"
+            exit 1
+          fi
+
+      - uses: rubygems/release-gem@v1

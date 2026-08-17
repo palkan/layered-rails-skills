@@ -13,9 +13,11 @@ Agentic guidance for developing skills in this repo. Skills _usage_ lives in eac
 - `hyperdrive.yml` — gem-root manifest declaring rails-hyperdrive install gating: which gem(s)/version(s) a skill requires, and which supporting files install only when a given gem is bundled. Keyed by skill-dir relpath from the skills root (`layered-rails/skills`) — see Rendered skills
 - `rails-hyperdrive/<plugin>/` — that gem's tooling: `templates/<skill>/SKILL.md.erb` (ERB master the skill's `SKILL.md` is rendered from — see Rendered skills), plus its `Gemfile` and `Rakefile`
 - `.claude-plugin/marketplace.json` — top-level marketplace manifest
+- `Gemfile` / `Rakefile` — gem release plumbing; `rake release` runs from the repo root, next to the gemspec
 - `scripts/lint-skills.py` — skill linter (rules described in its docstring)
 - `lefthook.yml` — runs the linter pre-commit
-- `.github/workflows/lint.yml` — runs the linter in CI
+- `.github/workflows/lint.yml` — runs the linter and the freshness gate in CI
+- `.github/workflows/release.yml` — publishes the gem on `v*` tag push
 
 ## CHANGELOG
 
@@ -98,6 +100,7 @@ Release flow:
 2. Bump both manifests to the new version.
 3. Rename `## master` → `## <version> (<date>)` in `CHANGELOG.md`; add a fresh `## master` above it.
 4. Commit and tag (`git tag v<version>`).
+5. Push the tag. `.github/workflows/release.yml` re-checks freshness, asserts the tag matches `plugin.json`, and publishes `layered-rails-skills` to RubyGems.
 
 ## Authoring conventions
 
