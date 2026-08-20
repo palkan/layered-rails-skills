@@ -1,0 +1,208 @@
+# ArchSpec
+
+Static architecture linter for Ruby and Rails — turns the layered architecture rules into executable checks that run in CI and on every (human- or agent-written) change. Reads source with Prism; no app boot.
+
+**GitHub**: https://github.com/crmne/archspec
+**Docs**: https://archspecrb.dev
+**Layer**: Dev/test tooling (enforces layer boundaries; not part of the runtime stack)
+
+## Contents
+
+- Division of Labor
+- Installation
+- Reference Archspec.rb
+- What Each Block Enforces
+- Domain Services
+- Tailoring the Config
+- Adopting on an Existing Codebase
+- Advanced: Per-Folder Components
+- What ArchSpec Cannot Check
+
+## Division of Labor
+
+ArchSpec complements this skill; it does not replace it. ArchSpec classifies code **by file path** and checks mechanical rules (dependency direction, forbidden calls, forbidden constants). This skill classifies code **by purpose** (a `*Calculator` under `app/services/` is a domain object) and makes judgment calls (specification test, waiting-room discipline, callback scoring, naming). Use the analyze and review workflows (see SKILL.md) to decide where code belongs; use ArchSpec to lock the boundaries in once files sit in the right folders.
+
+## Installation
+
+```ruby
+# Gemfile
+group :development, :test do
+  gem "archspec"
+end
+```
+
+```bash
+bundle exec archspec init      # generates Archspec.rb
+bundle exec archspec check     # run the checks (CI, hooks, after agent edits)
+bundle exec archspec explain app/models/user.rb   # how a file is classified
+```
+
+## Reference Archspec.rb
+
+The four architecture layers as an ordered `:layered` preset — earlier layers may use later ones, never the reverse (Rules 1–2), with cycle detection. Delete globs for folders your app doesn't have; empty patterns are harmless.
+
+```ruby
+# Archspec.rb
+source "app/**/*.rb"
+
+architecture :layered, layers: {
+  presentation: %w[
+    app/controllers/**/*.rb
+    app/views/**/*.rb
+    app/components/**/*.rb
+    app/helpers/**/*.rb
+    app/presenters/**/*.rb
+    app/serializers/**/*.rb
+    app/forms/**/*.rb
+    app/filters/**/*.rb
+    app/channels/**/*.rb
+    app/mailboxes/**/*.rb
+    app/jobs/**/*.rb
+  ],
+  application: %w[
+    app/services/**/*.rb
+    app/operations/**/*.rb
+    app/policies/**/*.rb
+    app/mailers/**/*.rb
+    app/deliveries/**/*.rb
+    app/notifiers/**/*.rb
+    app/agents/**/*.rb
+  ],
+  domain: %w[
+    app/models/**/*.rb
+    app/queries/**/*.rb
+    app/values/**/*.rb
+    app/repositories/**/*.rb
+    app/configs/**/*.rb
+  ],
+  infrastructure: %w[
+    app/clients/**/*.rb
+  ]
+}
+
+# Controller APIs stay in controllers — bare calls to the request context
+# from lower layers are reverse dependencies (Rule 2)
+application.cannot_call :render, :redirect_to, :params, :session, :cookies, :flash,
+                        receiver: :none
+domain.cannot_call :render, :redirect_to, :params, :session, :cookies, :flash,
+                   receiver: :none
+
+# Domain objects never read execution context — pass explicit parameters
+domain.cannot_reference_constants "Current"
+
+# A top-level app/<x>/ folder names a layer or a concept, never a vendor
+component(:vendor_folders, in: "app/{sidekiq,temporal,redis,stripe,kafka}/**/*.rb")
+  .must_be_empty(because: "vendor code goes one level deeper, e.g. app/clients/stripe/")
+```
+
+## What Each Block Enforces
+
+| Config block | Skill rule / anti-pattern |
+|---|---|
+| `architecture :layered` ordering + `no_cycles` (built into the preset) | Rules 1, 2, and 4: unidirectional flow, no reverse dependencies, acyclic layers |
+| `app/jobs/` in the presentation tier | Jobs are internal inbound entry points — they may call services and models; models may not call jobs (`SomeJob.perform_later` in a callback becomes a dependency violation) |
+| `app/mailers/`, `app/deliveries/` in application | Mailers live above the domain layer — `OrderMailer.confirmation(...)` from a model callback is flagged |
+| `application.cannot_call ... receiver: :none` | Request/params/render in services (layer-violations anti-pattern) |
+| `domain.cannot_reference_constants "Current"` | Current in models (current-attributes topic) |
+| `vendor_folders.must_be_empty` | Vendor-named top-level folders (service-layer audit naming rules) |
+
+Skipping a layer (controller → model directly) is allowed by the preset — matching the architecture-sinkhole caveat: never add a pass-through object just to satisfy adjacency.
+
+## Domain Services
+
+The domain layer is more than Active Record models — it includes the **domain services** sub-layer: query objects, calculators, resolvers, repositories, collaborator objects. Their canonical home is *inside* the model namespace, so the `app/models/**/*.rb` glob already classifies them correctly with no extra patterns:
+
+```
+app/models/user/with_bookmarked_posts_query.rb   # User::WithBookmarkedPostsQuery — query object
+app/models/order/total_calculator.rb             # Order::TotalCalculator — calculator
+app/models/post/publisher.rb                     # Post::Publisher — collaborator object
+```
+
+To make the query-object convention itself checkable, add a suffix-scoped component on top of the layer map — and extend the allowlists it overlaps, because `can_only_use` checks every component a referenced constant belongs to (repeated `can_only_use` calls merge):
+
+```ruby
+component :query_objects, in: %w[app/models/**/*_query.rb app/queries/**/*.rb]
+query_objects.must_implement_one_of :resolve, :call
+
+# query_objects overlaps :domain — extend allowlists so references to them stay legal
+domain.can_only_use :query_objects
+application.can_only_use :query_objects
+presentation.can_only_use :query_objects
+```
+
+The inverse case — suffix-named domain services stranded under `app/services/` (`*_query.rb`, `*_calculator.rb`, `*_resolver.rb`) — is the purpose-vs-folder mismatch: path-based classification calls them application, their nature is domain. The fix is to move them (the service-layer audit's demote recommendation); during the migration a guard keeps new ones from appearing:
+
+```ruby
+component(:misfiled_domain_services, in: %w[
+  app/services/**/*_query.rb
+  app/services/**/*_calculator.rb
+  app/services/**/*_resolver.rb
+]).must_be_empty(because: "pure derivation from domain data is a domain service — " \
+                          "move it under app/models/<namespace>/ or app/queries/")
+```
+
+(As with vendor folders, expect companion `dependencies.allow` noise on files this matches until they move.)
+
+## Tailoring the Config
+
+- **Nested specializations.** `app/services/queries/` ≈ `app/queries/` — but don't carve it into `domain` with a more specific glob while `app/services/**/*.rb` stays in `application`: the files land in **both** layers, and since `can_only_use` checks every component a constant belongs to, models calling those queries get flagged (`domain may not depend on application`). Prefer renaming the folder to top-level `app/queries/`; keep a carve-out only when nothing in `domain` references it. Verify membership with `archspec explain`.
+- **Models-first codebases.** With no `app/services/`, deep model namespaces carry orchestration; the layer map still works — but keep the `domain.cannot_call`/`cannot_reference_constants` rules, they're the teeth of the models-first caveat (no HTTP/LLM/job-enqueuing classes hiding under `app/models/`).
+- **Accepted `Current` exceptions** (audit-column defaults, overridable kwarg defaults) get inline suppressions with the rule id from the failure output:
+
+  ```ruby
+  # archspec:disable-next-line constants.forbid -- audit default, accepted exception
+  self.created_by_id ||= Current.user&.id
+  ```
+- **Mailer compromise.** Mailers using view helpers or presenters reference presentation constants — an upward edge from application. Prefer doing that work in the mailer's template (templates aren't analyzed), pass prepared values from the caller, or suppress with a reason.
+
+## Adopting on an Existing Codebase
+
+```ruby
+# Archspec.rb — track existing violations, fail only on new ones
+todo "archspec_todo.yml"
+```
+
+Entries are keyed by rule, path, and evidence, so they survive edits. Burn the file down as refactoring progresses (the layerification plan workflow's phases are natural checkpoints) and **never add entries to accommodate new code** — new violations are fixed in code, not hidden. When a check fails on agent-written changes, read the evidence first; `archspec explain` shows how the file was classified.
+
+## Advanced: Per-Folder Components
+
+For finer allowlists (e.g., policies may only see models, forms may not touch clients), skip the preset and declare one component per folder with explicit `can_only_use` lists plus `no_cycles among:`.
+
+Two things to know first:
+
+- **Overlap poisons allowlists.** `can_only_use` checks *every* component a referenced constant belongs to. Adding `component :services, in: "app/services/**/*.rb"` on top of the `:layered` preset makes every controller→service reference a violation (`:services` isn't in the preset's allowlist). Either stay overlap-free, or extend each affected allowlist (repeated `can_only_use` calls merge).
+- **Keep models and queries in one component.** The `Model::SomeQuery` convention is bidirectional by design (scopes call queries; queries name their model), so separating them trips cycle/allowlist checks.
+
+```ruby
+component :controllers, in: "app/controllers/**/*.rb"
+component :forms,       in: "app/forms/**/*.rb"
+component :services,    in: "app/services/**/*.rb"
+component :policies,    in: "app/policies/**/*.rb"
+component :deliveries,  in: %w[app/deliveries/**/*.rb app/mailers/**/*.rb app/notifiers/**/*.rb]
+component :domain,      in: %w[app/models/**/*.rb app/queries/**/*.rb app/values/**/*.rb]
+component :clients,     in: "app/clients/**/*.rb"
+
+controllers.can_only_use :forms, :services, :policies, :deliveries, :domain
+forms.can_only_use :services, :domain
+services.can_only_use :policies, :deliveries, :domain, :clients
+policies.can_only_use :domain
+deliveries.can_only_use :domain
+domain.can_only_use :clients
+
+services.must_implement :call   # only if a call convention is already established
+no_cycles among: %i[controllers forms services policies deliveries domain clients]
+```
+
+Add `must_implement` protocol rules only where the service-layer audit workflow confirms the convention actually exists — a linter shouldn't invent one.
+
+## What ArchSpec Cannot Check
+
+Design judgments stay with code review and this skill's workflows:
+
+- The specification test — whether responsibilities match the layer
+- Waiting-room discipline — whether `app/services/` is shrinking into real abstractions
+- Purpose-vs-folder classification — a domain calculator misfiled in `app/services/` passes every dependency check
+- Callback scoring, anemic models, god objects, naming quality
+- Architecture sinkholes — pass-through objects satisfy the linter perfectly
+
+Run `archspec check` to guard the boundaries; run `/layered-rails:review` to judge what lives inside them.

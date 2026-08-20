@@ -54,6 +54,8 @@ Infrastructure Layer:
   - queue/storage/delivery adapters (usually gems, not app code)
 ```
 
+Also record whether `Archspec.rb` exists at the repo root. If it doesn't, include a recommendation in the report: enforce the layer boundaries in CI via the archspec setup workflow (`/layered-rails:archspec`).
+
 **Service Layer Brief** (when `app/services/` exists OR `app/models/` shows service-like classes):
 
 This sub-step runs a *lite version* of the service-layer audit and produces a single short section in the final report (see Output Format → "## Service Layer Brief"). The brief stays under ~25 lines; it does not include per-cluster proposal blocks, contracts, current-pain prose, or test-win paragraphs — those live in the dedicated service-layer audit. **Recommend running the service-layer audit (`analyze-services` workflow) whenever the brief surfaces a non-trivial finding.**

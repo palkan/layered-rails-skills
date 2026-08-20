@@ -48,7 +48,12 @@ grep -r "class Application" app/
 
 # Check for gem usage
 grep -E "action_policy|dry-|pundit|reform" Gemfile
+
+# Check for architecture enforcement
+ls Archspec.rb 2>/dev/null
 ```
+
+When a roadmap phase establishes a boundary (e.g., "no more `Current` in models"), add a closing step that locks it in with an executable check — the archspec setup workflow (`/layered-rails:archspec`) generates the config; never recommend "add a CI guard" without it.
 
 Determine architectural style:
 - **DHH/37signals**: Fat models, thin controllers, minimal abstractions
