@@ -1,0 +1,5 @@
+# GitHub Linguist overrides — keep language stats meaningful for a skills/docs repo.
+# The lint script is repo tooling, not project code.
+scripts/** linguist-vendored
+# The ERB master is a Markdown template; Linguist would otherwise classify it as HTML+ERB.
+*.md.erb linguist-documentation
