@@ -3,7 +3,7 @@
 Abstraction layer over delivery mechanisms (email, push, SMS, etc.).
 
 **GitHub**: https://github.com/palkan/active_delivery
-**Layer**: Application (delivery classes) / Infrastructure (notifiers)
+**Layer**: Application (delivery, mailer, and notifier classes) / Infrastructure (delivery drivers and adapters)
 
 ## Contents
 

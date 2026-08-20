@@ -2,6 +2,8 @@
 
 ## master
 
+- Fixed layer assignments across the skill to match the book's raw text: mailers/deliveries/notifiers moved to the Application layer, form/filter objects to Presentation, query objects and repositories to Domain (domain services), jobs/channels to Presentation as internal inbound entry points, and config classes to Domain with their sources in Infrastructure
+
 ## 2.0.1 (2026-05-20)
 
 - Tightened `/layered-rails:analyze-services` "models-first variant" verdict: a single application-shaped class under `app/models/` (HTTP client, LLM caller, job-enqueuer, transport wrapper) now disqualifies the mature-decomposition exit and forces a Mixed verdict

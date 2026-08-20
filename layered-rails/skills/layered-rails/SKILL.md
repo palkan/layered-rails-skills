@@ -19,24 +19,27 @@ Rails applications are organized into four architecture layers with **unidirecti
 ```
 ┌─────────────────────────────────────────┐
 │           PRESENTATION LAYER            │
-│  Controllers, Views, Channels, Mailers  │
+│   Controllers, Views, Channels, Jobs*   │
+│ Forms, Filters, Presenters, Serializers │
 └─────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────┐
 │           APPLICATION LAYER             │
-│   Service Objects, Form Objects, etc.   │
+│ Services, Policies, Mailers, Deliveries │
 └─────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────┐
 │             DOMAIN LAYER                │
-│  Models, Value Objects, Domain Events   │
+│  Models, Value Objects, Query Objects   │
 └─────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────┐
 │          INFRASTRUCTURE LAYER           │
-│  Active Record, APIs, File Storage      │
+│  Active Record, API Clients, Storage    │
 └─────────────────────────────────────────┘
 ```
+
+\* Jobs are **internal inbound** entry points: design-wise they follow the same rules as controllers, minus authentication and user-input handling.
 
 **Core Rule:** Lower layers must never depend on higher layers.
 
@@ -121,7 +124,7 @@ See [Specification Test Reference](references/core/specification-test.md) for de
 | Collaborator Object | Domain | A slice of one model's behavior in a typed delegate | [collaborator-objects.md](references/patterns/collaborator-objects.md) |
 | State Machine | Domain | States, events, transitions | [state-machines.md](references/patterns/state-machines.md) |
 | Concern | Domain | Shared behavioral extraction | [concerns.md](references/patterns/concerns.md) |
-| Repository | Application | **Last resort** — returning custom domain objects mapped from AR data, after AR scopes (simple) and query objects (query building) are insufficient | [repositories.md](references/patterns/repositories.md) |
+| Repository | Domain | **Last resort** — returning custom domain objects mapped from AR data, after AR scopes (simple) and query objects (query building) are insufficient | [repositories.md](references/patterns/repositories.md) |
 
 ### Pattern Selection Guide
 

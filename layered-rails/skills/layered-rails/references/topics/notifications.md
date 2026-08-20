@@ -51,7 +51,7 @@ class PostsDelivery < ApplicationDelivery
   end
 end
 
-# Mailer (infrastructure layer)
+# Mailer (application layer; its delivery adapter — SMTP — is infrastructure)
 class PostsMailer < ApplicationMailer
   def published
     @post = params[:post]
@@ -64,7 +64,7 @@ class PostsMailer < ApplicationMailer
   end
 end
 
-# Slack notifier (infrastructure layer)
+# Slack notifier (application layer; the driver is infrastructure)
 class SlackNotifier < AbstractNotifier::Base
   self.driver = SlackDriver.new
 

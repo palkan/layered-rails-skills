@@ -27,23 +27,31 @@ Presentation Layer:
   - app/components/
   - app/helpers/
   - app/presenters/
+  - app/serializers/
+  - app/forms/
+  - app/filters/
+  - app/channels/
+  - app/jobs/        # internal inbound — same design rules as controllers,
+                     # minus authentication and user-input handling
 
 Application Layer:
   - app/services/
   - app/operations/
   - app/policies/
-  - app/forms/
-  - app/queries/
+  - app/mailers/
   - app/deliveries/
+  - app/notifiers/
 
 Domain Layer:
   - app/models/
+  - app/queries/
+  - app/values/
+  - app/configs/     # config schema objects; their sources (ENV/YAML/credentials)
+                     # are infrastructure
 
 Infrastructure Layer:
-  - app/mailers/
-  - app/jobs/
-  - app/channels/
-  - app/configs/
+  - app/clients/
+  - queue/storage/delivery adapters (usually gems, not app code)
 ```
 
 **Service Layer Brief** (when `app/services/` exists OR `app/models/` shows service-like classes):

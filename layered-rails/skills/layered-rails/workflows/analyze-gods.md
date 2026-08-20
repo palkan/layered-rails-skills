@@ -68,8 +68,8 @@ For each god object candidate:
 
 3. **Check for layer violations**
    - Presentation logic (formatting, view helpers)
-   - Infrastructure concerns (API calls, mailers)
-   - Application logic (orchestration, authorization)
+   - Infrastructure concerns (direct API/SDK calls)
+   - Application logic (orchestration, notifications/mailers, authorization)
 
 4. **Map dependencies**
    - What other models does it touch?
