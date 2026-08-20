@@ -2,6 +2,9 @@
 
 ## master
 
+## 3.0.0 (2026-08-21)
+
+- **BREAKING:** We are now `layered-rails-skills` everywhere: the GitHub repo (was `palkan/skills`), and the Claude Code marketplace (was `palkan-skills`) — re-add the marketplace and reinstall the plugin: `/plugin marketplace add palkan/layered-rails-skills`, then `/plugin install layered-rails@layered-rails-skills`.
 - Added [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) install path: the layered-rails skill tree now also ships as the `layered-rails-skills` gem. `SKILL.md` renders from an ERB master, and each reference manual under `references/gems/` installs only when its target gem is in the app's bundle — gating declared in the gem-root `hyperdrive.yml` manifest, requires rails-hyperdrive `>= 0.5`.
 
 ## 2.1.0 (2026-08-21)
