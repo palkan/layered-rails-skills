@@ -20,12 +20,18 @@ Configuration management extracts settings from code into structured, environmen
 
 ```
 ┌─────────────────────────────────────────┐
+│ Domain Layer                            │
+│  └─ Configuration classes (schema)      │
+└─────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
 │ Infrastructure Layer                    │
-│  └─ Configuration classes               │
-│  └─ Environment variables               │
-│  └─ YAML files                          │
+│  └─ Configuration sources               │
+│     (ENV, YAML files, credentials)      │
 └─────────────────────────────────────────┘
 ```
+
+Configuration providers (ENV, YAML, credentials stores) are implementation details — infrastructure. By separating the schema from its data sources, config classes are promoted to the domain layer: upper layers depend on the typed config object, never on ENV/YAML directly.
 
 ## Key Principles
 

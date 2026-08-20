@@ -1,6 +1,6 @@
 ---
 name: layered-rails
-description: Write, refactor, and review Rails code using layered architecture principles from "Layered Design for Ruby on Rails Applications". Use when writing or refactoring Rails code — models, controllers, services, jobs, mailers, policies, forms, query objects, presenters, view components, state machines, serializers, or AI/LLM features — to apply correct patterns and avoid layer violations; and when reviewing Rails code, PRs, or diffs for layer violations, fat controllers/models, anemic models, callback misuse, god objects, or specification-test failures. Triggers on "layered design", "architecture layers", "abstraction layer", "specification test", "layer violation", "fat controller/model", "god object", "anemic model", "extract service/callback/policy/concern", "service object", "form object", "policy object", "query object", "value object", "presenter", "view component", "state machine", "Active Delivery", "callback scoring", "Rails refactor/review", "Rails patterns/best practices".
+description: Write, refactor, and review Rails code using layered architecture principles from "Layered Design for Ruby on Rails Applications". Use when writing or refactoring Rails code — models, controllers, services, jobs, mailers, policies, forms, query objects, presenters, view components, state machines, serializers, or AI/LLM features — to apply correct patterns and avoid layer violations; and when reviewing Rails code, PRs, or diffs for layer violations, fat controllers/models, anemic models, callback misuse, god objects, or specification-test failures. Triggers on "layered design", "architecture layers", "abstraction layer", "specification test", "layer violation", "fat controller/model", "god object", "anemic model", "extract service/callback/policy/concern", "service object", "form/policy/query/value object", "presenter", "view component", "state machine", "Active Delivery", "callback scoring", "Rails refactor/review", "Rails patterns/best practices", "archspec", "architecture linter/enforcement".
 allowed-tools:
   - Grep
   - Glob
@@ -19,24 +19,27 @@ Rails applications are organized into four architecture layers with **unidirecti
 ```
 ┌─────────────────────────────────────────┐
 │           PRESENTATION LAYER            │
-│  Controllers, Views, Channels, Mailers  │
+│   Controllers, Views, Channels, Jobs*   │
+│ Forms, Filters, Presenters, Serializers │
 └─────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────┐
 │           APPLICATION LAYER             │
-│   Service Objects, Form Objects, etc.   │
+│ Services, Policies, Mailers, Deliveries │
 └─────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────┐
 │             DOMAIN LAYER                │
-│  Models, Value Objects, Domain Events   │
+│  Models, Value Objects, Query Objects   │
 └─────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────┐
 │          INFRASTRUCTURE LAYER           │
-│  Active Record, APIs, File Storage      │
+│  Active Record, API Clients, Storage    │
 └─────────────────────────────────────────┘
 ```
+
+\* Jobs are **internal inbound** entry points: design-wise they follow the same rules as controllers, minus authentication and user-input handling.
 
 **Core Rule:** Lower layers must never depend on higher layers.
 
@@ -66,6 +69,7 @@ Reusable procedures bundled inside this skill. Read the file and apply it to the
 - [Callback analysis](workflows/analyze-callbacks.md) — score Active Record callbacks and find extraction candidates
 - [God-object analysis](workflows/analyze-gods.md) — identify oversized models and recommend decomposition
 - [Gradual layerification plan](workflows/plan.md) — incremental roadmap for adopting layered patterns
+- [ArchSpec setup](workflows/archspec.md) — generate and verify a tailored `Archspec.rb` enforcing the layer boundaries in CI
 
 ## Core Principles
 
@@ -121,7 +125,7 @@ See [Specification Test Reference](references/core/specification-test.md) for de
 | Collaborator Object | Domain | A slice of one model's behavior in a typed delegate | [collaborator-objects.md](references/patterns/collaborator-objects.md) |
 | State Machine | Domain | States, events, transitions | [state-machines.md](references/patterns/state-machines.md) |
 | Concern | Domain | Shared behavioral extraction | [concerns.md](references/patterns/concerns.md) |
-| Repository | Application | **Last resort** — returning custom domain objects mapped from AR data, after AR scopes (simple) and query objects (query building) are insufficient | [repositories.md](references/patterns/repositories.md) |
+| Repository | Domain | **Last resort** — returning custom domain objects mapped from AR data, after AR scopes (simple) and query objects (query building) are insufficient | [repositories.md](references/patterns/repositories.md) |
 
 ### Pattern Selection Guide
 
@@ -167,6 +171,7 @@ These slash commands are available **only when this skill is installed as a Clau
 | `/layered-rails:analyze-callbacks` | [analyze-callbacks](workflows/analyze-callbacks.md) | Score model callbacks, find extraction candidates |
 | `/layered-rails:analyze-gods` | [analyze-gods](workflows/analyze-gods.md) | Find god objects via churn × complexity |
 | `/layered-rails:plan [goal]` | [plan](workflows/plan.md) | Plan gradual adoption of layered patterns |
+| `/layered-rails:archspec` | [archspec](workflows/archspec.md) | Generate and verify an `Archspec.rb` enforcing layer boundaries in CI |
 
 ## Topic References
 
@@ -198,6 +203,7 @@ For library-specific guidance:
 | rubanok | Filter/transformation DSL | [rubanok.md](references/gems/rubanok.md) |
 | active_agent | AI agent framework | [active-agent.md](references/gems/active-agent.md) |
 | active_job-performs | Eliminate anemic jobs | [active-job-performs.md](references/gems/active-job-performs.md) |
+| archspec | Enforce layer boundaries in CI (reference `Archspec.rb` config) | [archspec.md](references/gems/archspec.md) |
 
 ## Extraction Signals
 

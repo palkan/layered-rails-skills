@@ -4,6 +4,12 @@
 
 - Added [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) install path: the layered-rails skill tree now also ships as the `rails-hyperdrive-layered-rails` gem. `SKILL.md` renders from an ERB master, and each reference manual under `references/gems/` installs only when its target gem is in the app's bundle — gating declared in the gem-root `hyperdrive.yml` manifest, requires rails-hyperdrive `>= 0.5`.
 
+## 2.1.0 (2026-08-21)
+
+- Added `archspec` gem reference with a canonical layered-rails `Archspec.rb` config — enforces the four-layer boundaries, controller-API and `Current` rules in CI, with domain-services conventions, tailoring/adoption guidance, and a per-folder variant
+- Added `/layered-rails:archspec` command and `archspec` workflow — detects the app's structure, generates a tailored `Archspec.rb` (offering gem installation when archspec is missing), verifies with `archspec check`, and triages violations (fix / suppress / baseline via `--update-todo`)
+- Fixed layer assignments across the skill to match the book's raw text: mailers/deliveries/notifiers moved to the Application layer, form/filter objects to Presentation, query objects and repositories to Domain (domain services), jobs/channels to Presentation as internal inbound entry points, and config classes to Domain with their sources in Infrastructure
+
 ## 2.0.1 (2026-05-20)
 
 - Tightened `/layered-rails:analyze-services` "models-first variant" verdict: a single application-shaped class under `app/models/` (HTTP client, LLM caller, job-enqueuer, transport wrapper) now disqualifies the mature-decomposition exit and forces a Mixed verdict
