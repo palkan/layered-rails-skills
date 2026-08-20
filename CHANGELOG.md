@@ -2,6 +2,8 @@
 
 ## master
 
+## 2.1.0 (2026-08-21)
+
 - Added `archspec` gem reference with a canonical layered-rails `Archspec.rb` config — enforces the four-layer boundaries, controller-API and `Current` rules in CI, with domain-services conventions, tailoring/adoption guidance, and a per-folder variant
 - Added `/layered-rails:archspec` command and `archspec` workflow — detects the app's structure, generates a tailored `Archspec.rb` (offering gem installation when archspec is missing), verifies with `archspec check`, and triages violations (fix / suppress / baseline via `--update-todo`)
 - Fixed layer assignments across the skill to match the book's raw text: mailers/deliveries/notifiers moved to the Application layer, form/filter objects to Presentation, query objects and repositories to Domain (domain services), jobs/channels to Presentation as internal inbound entry points, and config classes to Domain with their sources in Infrastructure
