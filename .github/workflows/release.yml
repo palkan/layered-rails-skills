@@ -1,7 +1,7 @@
 name: Release
 
 # Publishing authenticates via RubyGems Trusted Publishing, which needs a
-# trusted publisher entry for the rails-hyperdrive-layered-rails gem naming this repo,
+# trusted publisher entry for the layered-rails-skills gem naming this repo,
 # this workflow file, and the `release` environment. Without it the publish
 # step fails to authenticate.
 
@@ -27,7 +27,7 @@ jobs:
           working-directory: rails-hyperdrive/layered-rails
 
       - name: Verify SKILL.md matches its template
-        run: bundle exec rake "hyperdrive:skills:check[../../rails-hyperdrive-layered-rails.gemspec]"
+        run: bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"
 
   release:
     name: Publish to RubyGems
@@ -50,7 +50,7 @@ jobs:
       # the wrong version and push a second tag for it.
       - name: Assert the tag matches the gem version
         run: |
-          version=$(ruby -e 'print Gem::Specification.load("rails-hyperdrive-layered-rails.gemspec").version')
+          version=$(ruby -e 'print Gem::Specification.load("layered-rails-skills.gemspec").version')
           if [ "v$version" != "$GITHUB_REF_NAME" ]; then
             echo "::error::tag $GITHUB_REF_NAME does not match version $version from layered-rails/.claude-plugin/plugin.json"
             exit 1

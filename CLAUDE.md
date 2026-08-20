@@ -9,7 +9,7 @@ Agentic guidance for developing skills in this repo. Skills _usage_ lives in eac
   - `agents/` — agents launched by commands or directly
   - `skills/<skill>/` — `SKILL.md` + `references/` + `examples/`
   - `.claude-plugin/plugin.json` — plugin manifest
-- `rails-hyperdrive-<plugin>.gemspec` — packages the plugin's skill tree as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
+- `<plugin>-skills.gemspec` — packages the plugin's skill tree as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
 - `hyperdrive.yml` — gem-root manifest declaring rails-hyperdrive install gating: which gem(s)/version(s) a skill requires, and which supporting files install only when a given gem is bundled. Keyed by skill-dir relpath from the skills root (`layered-rails/skills`) — see Rendered skills
 - `rails-hyperdrive/<plugin>/` — that gem's tooling: `templates/<skill>/SKILL.md.erb` (ERB master the skill's `SKILL.md` is rendered from — see Rendered skills), plus its `Gemfile` and `Rakefile`
 - `.claude-plugin/marketplace.json` — top-level marketplace manifest
@@ -71,8 +71,8 @@ lint-skip:
 
 ```bash
 cd rails-hyperdrive/layered-rails
-bundle exec rake "hyperdrive:skills:render[../../rails-hyperdrive-layered-rails.gemspec]"   # rewrite SKILL.md from the template
-bundle exec rake "hyperdrive:skills:check[../../rails-hyperdrive-layered-rails.gemspec]"    # freshness gate — fails when they drift (also runs in CI)
+bundle exec rake "hyperdrive:skills:render[../../layered-rails-skills.gemspec]"   # rewrite SKILL.md from the template
+bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"    # freshness gate — fails when they drift (also runs in CI)
 ```
 
 Supporting files (`workflows/`, `references/`, `examples/`) have no templates and are edited directly.
@@ -84,7 +84,7 @@ SemVer. Bump the version in **both** places, kept in sync:
 - `<plugin>/.claude-plugin/plugin.json` → `version`
 - `.claude-plugin/marketplace.json` → `metadata.version` **and** matching `plugins[].version`
 
-`rails-hyperdrive-layered-rails.gemspec` reads its version from `plugin.json` at build time, so the gem follows automatically.
+`layered-rails-skills.gemspec` reads its version from `plugin.json` at build time, so the gem follows automatically.
 
 Bump rules:
 
@@ -100,7 +100,7 @@ Release flow:
 2. Bump both manifests to the new version.
 3. Rename `## master` → `## <version> (<date>)` in `CHANGELOG.md`; add a fresh `## master` above it.
 4. Commit and tag (`git tag v<version>`).
-5. Push the tag. `.github/workflows/release.yml` re-checks freshness, asserts the tag matches `plugin.json`, and publishes `rails-hyperdrive-layered-rails` to RubyGems.
+5. Push the tag. `.github/workflows/release.yml` re-checks freshness, asserts the tag matches `plugin.json`, and publishes `layered-rails-skills` to RubyGems.
 
 ## Authoring conventions
 
