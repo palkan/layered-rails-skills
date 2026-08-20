@@ -1,18 +1,14 @@
-# palkan/skills
-
-A collection of coding-agent skills by [Vladimir Dementyev](https://github.com/palkan). The bundled plugins and slash commands target [Claude Code](https://docs.anthropic.com/en/docs/claude-code), while the core skill content (`SKILL.md` + workflows + references + examples) is also usable from other environments such as Codex.
-
-## Available Skills
-
-### Layered Rails
+# Layered Rails Skills
 
 Design and review Rails applications using layered architecture principles from the [Layered Design for Ruby on Rails Applications](https://www.packtpub.com/en-us/product/layered-design-for-ruby-on-rails-applications-9781806114221) book.
+
+The bundled plugins and slash commands target [Claude Code](https://docs.anthropic.com/en/docs/claude-code), while the core skill content (`SKILL.md` + workflows + references + examples) is also usable from other environments such as Codex.
 
 **Install (recommended — full plugin with commands and sub-agents):**
 
 ```
-/plugin marketplace add palkan/skills
-/plugin install layered-rails@palkan-skills
+/plugin marketplace add palkan/layered-rails-skills
+/plugin install layered-rails@layered-rails-skills
 ```
 
 **Commands:**
@@ -26,11 +22,12 @@ Design and review Rails applications using layered architecture principles from 
 | `/layered-rails:review` | Review code changes for layer violations |
 | `/layered-rails:spec-test` | Run specification test on specific files |
 | `/layered-rails:plan [goal]` | Plan incremental adoption of layered patterns |
+| `/layered-rails:archspec` | Generate and verify an `Archspec.rb` enforcing layer boundaries in CI |
 
 **Install via [skills.sh](https://skills.sh/) (skill content only — no slash-command bindings):**
 
 ```
-npx skills add palkan/skills --skill layered-rails
+npx skills add palkan/layered-rails-skills --skill layered-rails
 ```
 
 skills.sh delivers the `skills/layered-rails/` tree — `SKILL.md`, `workflows/`, `references/`, and `examples/`. The `/layered-rails:*` slash commands and the `layered-rails-planner` / `layered-rails-reviewer` sub-agent registrations are not part of the skill spec and won't be copied, but every workflow they wrap is in `workflows/` and can be invoked by name in plain language ("run the layered-rails review workflow on this diff"). Use this path when you want the same skill in Codex, the Claude API, or any other agent that supports skills.sh; use `/plugin install` when you want the slash commands.
@@ -48,9 +45,9 @@ end
 bin/rails hyperdrive:init
 ```
 
-Installs the same skill tree into `.claude/skills/layered-rails/`, tailored to the app's bundle: the architecture core installs into any Rails app, while each per-gem reference manual under `references/gems/` (Action Policy, ViewComponent, Alba, …) installs only when its gem is in the app's `Gemfile.lock` — gating declared in [`hyperdrive.yml`](hyperdrive.yml) at the repo root — and `SKILL.md`'s Gem References table lists only what was installed. `bin/rails hyperdrive:sync` picks up updates on gem upgrades.
+Installs the same skill tree into `.claude/skills/layered-rails/`, tailored to the app's bundle: the architecture core installs into any Rails app, while each per-gem reference manual under `references/gems/` (Action Policy, ViewComponent, Alba, …) installs only when its gem is in the app's `Gemfile.lock` (the archspec manual is the exception — it installs unconditionally, since its job is to introduce that gem) — gating declared in [`hyperdrive.yml`](hyperdrive.yml) at the repo root — and `SKILL.md`'s Gem References table lists only what was installed. `bin/rails hyperdrive:sync` picks up updates on gem upgrades.
 
-### Integration with compound-engineering
+## Integration with compound-engineering
 
 We recommend asking Claude itself to update the instructions for Compound Engineering to include Layered Design features according to your needs. Below you can find some examples.
 
@@ -61,7 +58,7 @@ In your `compound-engineering.local.md` file:
 ```md
 ---
 review_agents:
-  - layered-rails
+  - layered-rails:layered-rails-reviewer
   - rails-reviewer
   - security-sentinel
   # - ...
@@ -80,7 +77,7 @@ Similarly, for planning features, add to your `CLAUDE.md` (or `AGENTS.md`, or wh
 ```md
 # ...
 
-### For planning agents
+## For planning agents
 
 When planning new features or architectural changes, use the `layered-rails` skill for analysis:
 - `/layered-rails:plan` — plan incremental adoption of layered patterns

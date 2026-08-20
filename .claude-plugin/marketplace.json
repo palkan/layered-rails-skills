@@ -1,5 +1,5 @@
 {
-  "name": "palkan-skills",
+  "name": "layered-rails-skills",
   "owner": {
     "name": "Vladimir Dementyev",
     "url": "https://github.com/palkan"
@@ -17,7 +17,7 @@
         "name": "Vladimir Dementyev",
         "url": "https://github.com/palkan"
       },
-      "homepage": "https://github.com/palkan/skills",
+      "homepage": "https://github.com/palkan/layered-rails-skills",
       "tags": ["rails", "ruby", "architecture", "layered-design", "code-review"],
       "source": "./layered-rails"
     }

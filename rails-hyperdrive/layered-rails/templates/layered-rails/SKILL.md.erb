@@ -56,7 +56,7 @@ Use this skill when:
 5. **Planning a feature** — I'll apply the layered principles below to whichever code you're about to write.
 6. **Implementing a specific pattern** — authorization, notifications, view components, AI integration, etc. — see the Pattern Catalog and Topic References below.
 
-In Claude Code with this skill installed as a plugin (`/plugin install layered-rails@palkan-skills`), each workflow above is also reachable as a slash command — see [Slash Commands](#slash-commands). Natural-language requests ("review this file with layered-rails", "run the specification test on `app/models/order.rb`") work in any environment that has the skill loaded.
+In Claude Code with this skill installed as a plugin (`/plugin install layered-rails@layered-rails-skills`), each workflow above is also reachable as a slash command — see [Slash Commands](#slash-commands). Natural-language requests ("review this file with layered-rails", "run the specification test on `app/models/order.rb`") work in any environment that has the skill loaded.
 
 ## Workflows
 
@@ -160,7 +160,7 @@ Canonical before/after transformations for the most common layerification moves.
 
 ## Slash Commands
 
-These slash commands are available **only when this skill is installed as a Claude Code plugin** (`/plugin install layered-rails@palkan-skills`). When the skill is installed via [skills.sh](https://skills.sh/) or any other path that delivers `skills/layered-rails/` without the surrounding plugin, the commands won't be present — invoke the corresponding workflow directly (see [Workflows](#workflows)) or just ask in plain language.
+These slash commands are available **only when this skill is installed as a Claude Code plugin** (`/plugin install layered-rails@layered-rails-skills`). When the skill is installed via [skills.sh](https://skills.sh/) or any other path that delivers `skills/layered-rails/` without the surrounding plugin, the commands won't be present — invoke the corresponding workflow directly (see [Workflows](#workflows)) or just ask in plain language.
 
 | Command | Workflow | Purpose |
 |---------|----------|---------|

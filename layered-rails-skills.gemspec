@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   )["version"]
   spec.authors = ["Vladimir Dementyev"]
   spec.summary = "Layered Rails architecture guidance as a rails-hyperdrive companion gem."
-  spec.homepage = "https://github.com/palkan/skills"
+  spec.homepage = "https://github.com/palkan/layered-rails-skills"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
