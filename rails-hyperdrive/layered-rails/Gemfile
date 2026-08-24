@@ -3,4 +3,4 @@ source "https://rubygems.org"
 gemspec path: "../.."
 
 gem "rake"
-gem "rails-hyperdrive", ">= 0.5"
+gem "rails-hyperdrive", ">= 0.7"
