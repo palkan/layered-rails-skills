@@ -1,5 +1,4 @@
 gem: railties
-versions: ">= 7.0"
 
 skills:
   layered-rails:
