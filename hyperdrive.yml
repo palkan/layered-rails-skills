@@ -1,3 +1,6 @@
+skills_dir: layered-rails/skills
+skill_templates_dir: rails-hyperdrive/layered-rails/templates
+
 gem: railties
 
 skills:

@@ -19,8 +19,6 @@ Gem::Specification.new do |spec|
 
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["rubygems_mfa_required"] = "true"
-  spec.metadata["hyperdrive_skills_dir"] = "layered-rails/skills"
-  spec.metadata["hyperdrive_skill_templates_dir"] = "rails-hyperdrive/layered-rails/templates"
   spec.metadata["hyperdrive_targets"] = %w[
     railties action_policy view_component anyway_config active_delivery
     alba workflow rubanok activeagent active_job-performs
