@@ -2,6 +2,9 @@
 
 ## master
 
+- Commands now carry `description:` and `argument-hint:` frontmatter, so Claude Code lists them with a summary and an argument hint. Each body drops the heading and usage block that restated its own invocation, which was only ever correct for the plugin install.
+- The rails-hyperdrive install path now ships the commands and sub-agents alongside the skill, into `.claude/commands/` and `.claude/agents/`. That directory has no plugin namespace, so commands install prefixed: `/layered-rails-analyze` rather than `/layered-rails:analyze`. Requires rails-hyperdrive `>= 0.7`.
+
 ## 3.0.0 (2026-08-21)
 
 - **BREAKING:** We are now `layered-rails-skills` everywhere: the GitHub repo (was `palkan/skills`), and the Claude Code marketplace (was `palkan-skills`) — re-add the marketplace and reinstall the plugin: `/plugin marketplace add palkan/layered-rails-skills`, then `/plugin install layered-rails@layered-rails-skills`.

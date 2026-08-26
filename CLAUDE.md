@@ -9,8 +9,8 @@ Agentic guidance for developing skills in this repo. Skills _usage_ lives in eac
   - `agents/` — agents launched by commands or directly
   - `skills/<skill>/` — `SKILL.md` + `references/` + `examples/`
   - `.claude-plugin/plugin.json` — plugin manifest
-- `<plugin>-skills.gemspec` — packages the plugin's skill tree as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
-- `hyperdrive.yml` — gem-root manifest declaring rails-hyperdrive install gating: which gem(s)/version(s) a skill requires, and which supporting files install only when a given gem is bundled. Keyed by skill-dir relpath from the skills root (`layered-rails/skills`) — see Rendered skills
+- `<plugin>-skills.gemspec` — packages the plugin's skills, commands, and agents as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
+- `hyperdrive.yml` — gem-root manifest: everything the rails-hyperdrive installer reads. Names the source directories (`skills_dir`, `skill_templates_dir`, `agents_dir`, `commands_dir`), declares install gating — which gem(s) a skill requires, and which supporting files install only when a given gem is bundled, keyed by skill-dir relpath from the skills root (`layered-rails/skills`), see Rendered skills — and sets `commands.command_prefix`, which namespaces the commands on install since `.claude/commands/` has no plugin namespace
 - `rails-hyperdrive/<plugin>/` — that gem's tooling: `templates/<skill>/SKILL.md.erb` (ERB master the skill's `SKILL.md` is rendered from — see Rendered skills), plus its `Gemfile` and `Rakefile`
 - `.claude-plugin/marketplace.json` — top-level marketplace manifest
 - `Gemfile` / `Rakefile` — gem release plumbing; `rake release` runs from the repo root, next to the gemspec
@@ -107,6 +107,7 @@ Release flow:
 - **Description triggers** — list both concept terms ("layered design", "fat controller") and concrete pattern names users actually type ("service object", "form object", "policy object"). Both are needed for routing.
 - **Agent naming** — use the `-er` / `-or` suffix to match existing convention (e.g., `layered-rails-reviewer`, `layered-rails-planner`). Command files use the bare verb (e.g., `commands/plan.md` for `/layered-rails:plan`).
 - **Agent frontmatter** — only `name:` and `description:`. No `model:` attribute (removed for harness compatibility; let consumers pick).
+- **Command frontmatter** — `description:`, plus `argument-hint:` when the command takes arguments. The body is the prompt, not documentation about the command: it must never name its own invocation, which differs per distribution (`/layered-rails:analyze` as a plugin, `/layered-rails-analyze` installed by rails-hyperdrive). Describe arguments via `argument-hint:` and read them with `$ARGUMENTS`.
 - **Commands launch agents by `name:`**, not file path. Keep both in sync if you rename one.
 - **Reference structure** — group references by kind (`core/`, `patterns/`, `anti-patterns/`, `topics/`, `gems/`, `examples/`). New references go under the matching kind; create a new kind only if no existing one fits.
 - **Don't commit/push without explicit ask.** Show the diff and wait.
