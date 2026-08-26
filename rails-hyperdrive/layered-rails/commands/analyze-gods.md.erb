@@ -1,11 +1,11 @@
-# /layered-rails:analyze-gods
+# <%= canonical_render? ? "/layered-rails:analyze-gods" : "/layered-rails-analyze-gods" %>
 
 Identify and analyze god objects in the codebase using churn × complexity metrics.
 
 ## Usage
 
 ```
-/layered-rails:analyze-gods [threshold]
+<%= canonical_render? ? "/layered-rails:analyze-gods" : "/layered-rails-analyze-gods" %> [threshold]
 ```
 
 - Without threshold: Uses default (250 lines)

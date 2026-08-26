@@ -1,0 +1,17 @@
+# <%= canonical_render? ? "/layered-rails:plan" : "/layered-rails-plan" %>
+
+Plan gradual adoption of layered architecture patterns.
+
+## Usage
+
+```
+<%= canonical_render? ? "/layered-rails:plan" : "/layered-rails-plan" %> [goal]
+```
+
+- `<%= canonical_render? ? "/layered-rails:plan" : "/layered-rails-plan" %>` — full layerification roadmap
+- `<%= canonical_render? ? "/layered-rails:plan" : "/layered-rails-plan" %> introduce authorization` — focus on policies
+- `<%= canonical_render? ? "/layered-rails:plan" : "/layered-rails-plan" %> refactor fat controllers` — focus on extracting to forms/services
+- `<%= canonical_render? ? "/layered-rails:plan" : "/layered-rails-plan" %> extract callbacks from User model` — specific model focus
+- `<%= canonical_render? ? "/layered-rails:plan" : "/layered-rails-plan" %> reduce god objects` — focus on model decomposition
+
+Read and follow [`skills/layered-rails/workflows/plan.md`](../skills/layered-rails/workflows/plan.md), applied to the goal given as argument.

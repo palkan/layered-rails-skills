@@ -1,0 +1,13 @@
+# <%= canonical_render? ? "/layered-rails:spec-test" : "/layered-rails-spec-test" %>
+
+Run the specification test on files to evaluate layer responsibility alignment.
+
+## Usage
+
+```
+<%= canonical_render? ? "/layered-rails:spec-test" : "/layered-rails-spec-test" %> [file_path]
+<%= canonical_render? ? "/layered-rails:spec-test" : "/layered-rails-spec-test" %> app/controllers/orders_controller.rb
+<%= canonical_render? ? "/layered-rails:spec-test" : "/layered-rails-spec-test" %> app/services/
+```
+
+Read and follow [`skills/layered-rails/workflows/spec-test.md`](../skills/layered-rails/workflows/spec-test.md), applied to the file path(s) given as arguments.

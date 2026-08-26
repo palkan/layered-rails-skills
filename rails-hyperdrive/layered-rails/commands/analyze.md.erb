@@ -1,11 +1,11 @@
-# /layered-rails:analyze
+# <%= canonical_render? ? "/layered-rails:analyze" : "/layered-rails-analyze" %>
 
 Comprehensive layered architecture analysis of a Rails codebase or specific directory.
 
 ## Usage
 
 ```
-/layered-rails:analyze [path]
+<%= canonical_render? ? "/layered-rails:analyze" : "/layered-rails-analyze" %> [path]
 ```
 
 - Without path: Analyzes entire `app/` directory

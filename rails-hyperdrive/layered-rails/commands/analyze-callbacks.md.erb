@@ -1,11 +1,11 @@
-# /layered-rails:analyze-callbacks
+# <%= canonical_render? ? "/layered-rails:analyze-callbacks" : "/layered-rails-analyze-callbacks" %>
 
 Deep analysis of Active Record callbacks in the codebase.
 
 ## Usage
 
 ```
-/layered-rails:analyze-callbacks [path]
+<%= canonical_render? ? "/layered-rails:analyze-callbacks" : "/layered-rails-analyze-callbacks" %> [path]
 ```
 
 - Without path: Analyzes all models in `app/models/`
