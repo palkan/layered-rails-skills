@@ -1,14 +1,6 @@
-# /layered-rails:analyze
+---
+description: Comprehensive layered architecture analysis of a Rails codebase or specific directory
+argument-hint: "[path]"
+---
 
-Comprehensive layered architecture analysis of a Rails codebase or specific directory.
-
-## Usage
-
-```
-/layered-rails:analyze [path]
-```
-
-- Without path: Analyzes entire `app/` directory
-- With path: Analyzes specific directory (e.g., `app/models`, `app/services`)
-
-Read and follow [`skills/layered-rails/workflows/analyze.md`](../skills/layered-rails/workflows/analyze.md), applied to the path given as argument.
+Read and follow [`skills/layered-rails/workflows/analyze.md`](../skills/layered-rails/workflows/analyze.md), applied to the directory in $ARGUMENTS — or to the entire `app/` directory if no path was given.

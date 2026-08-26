@@ -1,14 +1,6 @@
-# /layered-rails:analyze-gods
+---
+description: Identify and analyze god objects in the codebase using churn × complexity metrics
+argument-hint: "[threshold]"
+---
 
-Identify and analyze god objects in the codebase using churn × complexity metrics.
-
-## Usage
-
-```
-/layered-rails:analyze-gods [threshold]
-```
-
-- Without threshold: Uses default (250 lines)
-- With threshold: Custom line count threshold
-
-Read and follow [`skills/layered-rails/workflows/analyze-gods.md`](../skills/layered-rails/workflows/analyze-gods.md), applied with the threshold given as argument.
+Read and follow [`skills/layered-rails/workflows/analyze-gods.md`](../skills/layered-rails/workflows/analyze-gods.md), applied with the line-count threshold in $ARGUMENTS — or the default threshold of 250 lines if none was given.

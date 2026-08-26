@@ -1,16 +1,8 @@
-# /layered-rails:review
+---
+description: Standalone code review from a layered architecture perspective
+argument-hint: "[file_path | --staged | --branch <name>]"
+---
 
-Standalone code review from a layered architecture perspective.
+Read and follow [`skills/layered-rails/workflows/review.md`](../skills/layered-rails/workflows/review.md), applied to whatever $ARGUMENTS names: a file path, `--staged` for the staged changes, or `--branch <name>` for the changes against that branch. With no argument, review the uncommitted changes.
 
-## Usage
-
-```
-/layered-rails:review                    # Review uncommitted changes
-/layered-rails:review [file_path]        # Review specific file
-/layered-rails:review --staged           # Review staged changes
-/layered-rails:review --branch main      # Review changes vs branch
-```
-
-Read and follow [`skills/layered-rails/workflows/review.md`](../skills/layered-rails/workflows/review.md), applied to the diff or file path(s) given as arguments.
-
-For multi-agent review with compound-engineering, this same workflow runs as the `layered-rails-reviewer` sub-agent inside `/review`.
+For multi-agent review with compound-engineering, this same workflow runs as the `layered-rails-reviewer` sub-agent.
