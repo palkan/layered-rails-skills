@@ -1,7 +1,15 @@
 skills_dir: layered-rails/skills
 skill_templates_dir: rails-hyperdrive/layered-rails/templates
+agents_dir: layered-rails/agents
+commands_dir: layered-rails/commands
 
 gem: railties
+
+commands:
+  # Claude Code namespaces these as /layered-rails:<name> when the directory is
+  # loaded as a plugin; installing into .claude/commands/ has no namespace, so
+  # the prefix keeps the same identity and stays clear of the app's own commands.
+  command_prefix: layered-rails
 
 skills:
   layered-rails:

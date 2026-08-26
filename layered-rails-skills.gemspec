@@ -2,7 +2,9 @@ require "json"
 
 Gem::Specification.new do |spec|
   spec.name    = "layered-rails-skills"
-  packaging_revision = 1
+  # Set to publish a gem-only fix against unchanged plugin content; back to nil
+  # on the next plugin bump.
+  packaging_revision = nil
   spec.version = [
     JSON.parse(
       File.read(File.expand_path("layered-rails/.claude-plugin/plugin.json", __dir__))
@@ -15,7 +17,12 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
-  spec.files = Dir["layered-rails/skills/**/*", "rails-hyperdrive/layered-rails/templates/**/*"] + ["hyperdrive.yml"]
+  spec.files = Dir[
+    "layered-rails/skills/**/*",
+    "layered-rails/agents/*.md",
+    "layered-rails/commands/*.md",
+    "rails-hyperdrive/layered-rails/templates/**/*"
+  ] + ["hyperdrive.yml"]
 
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["rubygems_mfa_required"] = "true"
@@ -23,5 +30,5 @@ Gem::Specification.new do |spec|
     railties action_policy view_component anyway_config active_delivery
     alba workflow rubanok activeagent active_job-performs
   ].join(",")
-  spec.metadata["hyperdrive_artifacts"] = "skill"
+  spec.metadata["hyperdrive_artifacts"] = "skill,agent,command"
 end
