@@ -160,6 +160,7 @@ Canonical before/after transformations for the most common layerification moves.
 
 ## Slash Commands
 
+<%- if canonical_render? -%>
 These slash commands are available **only when this skill is installed as a Claude Code plugin** (`/plugin install layered-rails@layered-rails-skills`). When the skill is installed via [skills.sh](https://skills.sh/) or any other path that delivers `skills/layered-rails/` without the surrounding plugin, the commands won't be present — invoke the corresponding workflow directly (see [Workflows](#workflows)) or just ask in plain language.
 
 | Command | Workflow | Purpose |
@@ -172,6 +173,20 @@ These slash commands are available **only when this skill is installed as a Clau
 | `/layered-rails:analyze-gods` | [analyze-gods](workflows/analyze-gods.md) | Find god objects via churn × complexity |
 | `/layered-rails:plan [goal]` | [plan](workflows/plan.md) | Plan gradual adoption of layered patterns |
 | `/layered-rails:archspec` | [archspec](workflows/archspec.md) | Generate and verify an `Archspec.rb` enforcing layer boundaries in CI |
+<%- else -%>
+These slash commands are installed alongside the skill, into `.claude/commands/`. That directory has no plugin namespace, so each command carries the `layered-rails-` prefix.
+
+| Command | Workflow | Purpose |
+|---------|----------|---------|
+| `/layered-rails-review` | [review](workflows/review.md) | Review code changes from a layered architecture perspective |
+| `/layered-rails-spec-test` | [spec-test](workflows/spec-test.md) | Run specification test on specific files |
+| `/layered-rails-analyze` | [analyze](workflows/analyze.md) | Full codebase abstraction-layer analysis |
+| `/layered-rails-analyze-services` | [analyze-services](workflows/analyze-services.md) | Audit `app/services/` and service-like classes — conventions, clusters, layer hygiene, test consequences |
+| `/layered-rails-analyze-callbacks` | [analyze-callbacks](workflows/analyze-callbacks.md) | Score model callbacks, find extraction candidates |
+| `/layered-rails-analyze-gods` | [analyze-gods](workflows/analyze-gods.md) | Find god objects via churn × complexity |
+| `/layered-rails-plan [goal]` | [plan](workflows/plan.md) | Plan gradual adoption of layered patterns |
+| `/layered-rails-archspec` | [archspec](workflows/archspec.md) | Generate and verify an `Archspec.rb` enforcing layer boundaries in CI |
+<%- end -%>
 
 ## Topic References
 
