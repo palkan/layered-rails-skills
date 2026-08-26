@@ -2,9 +2,15 @@ require "json"
 
 Gem::Specification.new do |spec|
   spec.name    = "layered-rails-skills"
-  spec.version = JSON.parse(
-    File.read(File.expand_path("layered-rails/.claude-plugin/plugin.json", __dir__))
-  )["version"]
+  # Set to publish a gem-only release against unchanged plugin content; back to
+  # nil on the next plugin bump.
+  packaging_revision = 1
+  spec.version = [
+    JSON.parse(
+      File.read(File.expand_path("layered-rails/.claude-plugin/plugin.json", __dir__))
+    )["version"],
+    packaging_revision
+  ].compact.join(".")
   spec.authors = ["Vladimir Dementyev"]
   spec.summary = "Layered Rails architecture guidance as a rails-hyperdrive companion gem."
   spec.homepage = "https://github.com/palkan/layered-rails-skills"
@@ -14,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir[
     "layered-rails/skills/**/*",
     "layered-rails/agents/*.md",
-    "layered-rails/commands/*.md",
+    "rails-hyperdrive/layered-rails/commands/*.md.erb",
     "rails-hyperdrive/layered-rails/templates/**/*"
   ] + ["hyperdrive.yml"]
 
