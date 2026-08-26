@@ -36,7 +36,7 @@ skills.sh delivers the `skills/layered-rails/` tree — `SKILL.md`, `workflows/`
 
 ```ruby
 group :development do
-  gem "rails-hyperdrive", ">= 0.7"
+  gem "rails-hyperdrive", ">= 0.8"
   gem "layered-rails-skills"
 end
 ```
