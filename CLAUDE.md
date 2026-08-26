@@ -9,9 +9,9 @@ Agentic guidance for developing skills in this repo. Skills _usage_ lives in eac
   - `agents/` — agents launched by commands or directly
   - `skills/<skill>/` — `SKILL.md` + `references/` + `examples/`
   - `.claude-plugin/plugin.json` — plugin manifest
-- `<plugin>-skills.gemspec` — packages the plugin's skills, commands, and agents as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
+- `<plugin>-skills.gemspec` — packages the plugin's skills, agents, and command templates as a gem for the rails-hyperdrive install path (must sit at the repo root, above the tree it packages)
 - `hyperdrive.yml` — gem-root manifest: everything the rails-hyperdrive installer reads. Names the source directories (`skills_dir`, `skill_templates_dir`, `agents_dir`, `commands_dir`), declares install gating — which gem(s) a skill requires, and which supporting files install only when a given gem is bundled, keyed by skill-dir relpath from the skills root (`layered-rails/skills`), see Rendered skills — and sets `commands.command_prefix`, which namespaces the commands on install since `.claude/commands/` has no plugin namespace
-- `rails-hyperdrive/<plugin>/` — that gem's tooling: `templates/<skill>/SKILL.md.erb` (ERB master the skill's `SKILL.md` is rendered from — see Rendered skills), plus its `Gemfile` and `Rakefile`
+- `rails-hyperdrive/<plugin>/` — that gem's tooling: `templates/<skill>/` (ERB masters the skill's `SKILL.md` and a few supporting files are rendered from — see Rendered skills), `commands/*.md.erb` (the commands as installed by rails-hyperdrive — see Rendered skills), plus its `Gemfile` and `Rakefile`
 - `.claude-plugin/marketplace.json` — top-level marketplace manifest
 - `Gemfile` / `Rakefile` — gem release plumbing; `rake release` runs from the repo root, next to the gemspec
 - `scripts/lint-skills.py` — skill linter (rules described in its docstring)
@@ -75,7 +75,9 @@ bundle exec rake "hyperdrive:skills:render[../../layered-rails-skills.gemspec]" 
 bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"    # freshness gate — fails when they drift (also runs in CI)
 ```
 
-Supporting files (`workflows/`, `references/`, `examples/`) have no templates and are edited directly.
+Most supporting files (`workflows/`, `references/`, `examples/`) have no templates and are edited directly. The exceptions are the files that name a slash command (`workflows/analyze.md`, `workflows/plan.md`, `references/gems/archspec.md`): each is rendered from a same-path `.md.erb` twin under the templates dir, which wraps the command spelling in `canonical_render?` — `/layered-rails:<name>` in the rendered (plugin/skills.sh) face, `/layered-rails-<name>` when rails-hyperdrive installs into an app. Edit the template, then regenerate.
+
+The plugin's command files are not installed by rails-hyperdrive at all: `hyperdrive.yml` points `commands_dir` at `rails-hyperdrive/layered-rails/commands/`, where each command has a `.md.erb` twin of `layered-rails/commands/<name>.md` with its invocation spellings wrapped in the same `canonical_render?` conditional. There is no freshness gate for these — when editing a plugin command, mirror the edit in its template.
 
 ## Versioning and release
 
@@ -84,7 +86,7 @@ SemVer. Bump the version in **both** places, kept in sync:
 - `<plugin>/.claude-plugin/plugin.json` → `version`
 - `.claude-plugin/marketplace.json` → `metadata.version` **and** matching `plugins[].version`
 
-`layered-rails-skills.gemspec` reads its version from `plugin.json` at build time, so the gem follows automatically.
+`layered-rails-skills.gemspec` reads its version from `plugin.json` at build time, so the gem follows automatically. For a gem-only release against unchanged plugin content (packaging or install-path changes), set `packaging_revision` in the gemspec instead of bumping the manifests — the gem releases as `<plugin version>.<revision>` (e.g. `3.0.0.1`, tag `v3.0.0.1`) — and reset it to `nil` on the next plugin bump. Packaging revisions get no `CHANGELOG.md` section: the changelog tracks plugin content, and its headings follow `plugin.json` versions.
 
 Bump rules:
 
@@ -107,7 +109,7 @@ Release flow:
 - **Description triggers** — list both concept terms ("layered design", "fat controller") and concrete pattern names users actually type ("service object", "form object", "policy object"). Both are needed for routing.
 - **Agent naming** — use the `-er` / `-or` suffix to match existing convention (e.g., `layered-rails-reviewer`, `layered-rails-planner`). Command files use the bare verb (e.g., `commands/plan.md` for `/layered-rails:plan`).
 - **Agent frontmatter** — only `name:` and `description:`. No `model:` attribute (removed for harness compatibility; let consumers pick).
-- **Command frontmatter** — `description:`, plus `argument-hint:` when the command takes arguments. The body is the prompt, not documentation about the command: it must never name its own invocation, which differs per distribution (`/layered-rails:analyze` as a plugin, `/layered-rails-analyze` installed by rails-hyperdrive). Describe arguments via `argument-hint:` and read them with `$ARGUMENTS`.
+- **Command bodies use the plugin spelling** (`/layered-rails:<name>`) when naming any command, including their own invocation. The rails-hyperdrive channel installs from the `.md.erb` twins instead (see Rendered skills), which render the prefixed spelling — keep a command and its twin in sync.
 - **Commands launch agents by `name:`**, not file path. Keep both in sync if you rename one.
 - **Reference structure** — group references by kind (`core/`, `patterns/`, `anti-patterns/`, `topics/`, `gems/`, `examples/`). New references go under the matching kind; create a new kind only if no existing one fits.
 - **Don't commit/push without explicit ask.** Show the diff and wait.
