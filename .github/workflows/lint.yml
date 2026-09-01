@@ -35,3 +35,6 @@ jobs:
 
       - name: Verify SKILL.md matches its template
         run: bundle exec rake "hyperdrive:skills:check[../../layered-rails-skills.gemspec]"
+
+      - name: Lint hyperdrive.yml
+        run: bundle exec rake "hyperdrive:manifest:check[../../layered-rails-skills.gemspec]"

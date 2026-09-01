@@ -45,14 +45,15 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
 
-      # `rake release` derives the version it publishes from plugin.json, not
-      # from the tag that triggered this run. A mismatch would silently publish
-      # the wrong version and push a second tag for it.
+      # `rake release` derives the version it publishes from the gemspec
+      # (plugin.json plus any packaging revision), not from the tag that
+      # triggered this run. A mismatch would silently publish the wrong version
+      # and push a second tag for it.
       - name: Assert the tag matches the gem version
         run: |
           version=$(ruby -e 'print Gem::Specification.load("layered-rails-skills.gemspec").version')
           if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::tag $GITHUB_REF_NAME does not match version $version from layered-rails/.claude-plugin/plugin.json"
+            echo "::error::tag $GITHUB_REF_NAME does not match gemspec version $version"
             exit 1
           fi
 

@@ -32,11 +32,11 @@ npx skills add palkan/layered-rails-skills --skill layered-rails
 
 skills.sh delivers the `skills/layered-rails/` tree — `SKILL.md`, `workflows/`, `references/`, and `examples/`. The `/layered-rails:*` slash commands and the `layered-rails-planner` / `layered-rails-reviewer` sub-agent registrations are not part of the skill spec and won't be copied, but every workflow they wrap is in `workflows/` and can be invoked by name in plain language ("run the layered-rails review workflow on this diff"). Use this path when you want the same skill in Codex, the Claude API, or any other agent that supports skills.sh; use `/plugin install` when you want the slash commands.
 
-**Install via [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) (Rails apps — bundle-aware skill content):**
+**Install via [rails-hyperdrive](https://github.com/rails-hyperdrive/rails-hyperdrive) (Rails apps — bundle-aware, commands and sub-agents included):**
 
 ```ruby
 group :development do
-  gem "rails-hyperdrive", ">= 0.5"
+  gem "rails-hyperdrive", ">= 0.8"
   gem "layered-rails-skills"
 end
 ```
@@ -46,6 +46,8 @@ bin/rails hyperdrive:init
 ```
 
 Installs the same skill tree into `.claude/skills/layered-rails/`, tailored to the app's bundle: the architecture core installs into any Rails app, while each per-gem reference manual under `references/gems/` (Action Policy, ViewComponent, Alba, …) installs only when its gem is in the app's `Gemfile.lock` (the archspec manual is the exception — it installs unconditionally, since its job is to introduce that gem) — gating declared in [`hyperdrive.yml`](hyperdrive.yml) at the repo root — and `SKILL.md`'s Gem References table lists only what was installed. `bin/rails hyperdrive:sync` picks up updates on gem upgrades.
+
+The commands and sub-agents come along too, into `.claude/commands/` and `.claude/agents/`. Since that directory has no plugin namespace, the commands install prefixed — `/layered-rails-analyze` rather than `/layered-rails:analyze` — and the two sub-agents keep their names.
 
 ## Integration with compound-engineering
 

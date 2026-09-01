@@ -1,5 +1,14 @@
+skills_dir: layered-rails/skills
+skill_templates_dir: rails-hyperdrive/layered-rails/templates
+agents_dir: layered-rails/agents
+commands_dir: rails-hyperdrive/layered-rails/commands
+
 gem: railties
-versions: ">= 7.0"
+
+hyperdrive_version: ">= 0.8"
+
+commands:
+  command_prefix: layered-rails
 
 skills:
   layered-rails:
