@@ -52,8 +52,8 @@ Write the file to the repo root and summarize what was included, what was exclud
 Run `bundle exec archspec check`. On failures, read the evidence — never weaken a rule just to make it pass. Classify each violation:
 
 - **Real boundary violation in existing code** — legacy debt. Bootstrap the baseline: add `todo "archspec_todo.yml"` to the config and run `bundle exec archspec check --update-todo`. The todo file freezes existing violations so new code must be clean. Never re-run `--update-todo` to absorb new violations.
-- **Misclassification** — run `bundle exec archspec explain <file>` and fix the globs, or move the file to the folder matching its purpose.
-- **Accepted exception** (e.g., an audit-column `Current` default) — inline suppression with a reason, per the reference.
+- **Misclassification** — run `bundle exec archspec explain <file>` and fix the globs, move the file to the folder matching its purpose, or reclassify the dependency itself: a client wrapper a model legitimately uses belongs in the infrastructure layer via an `except:` carve-out, and a layer subset with extra rights (e.g. workflows firing deliveries) gets its own carved-out component — see the reference's Escape Hatches section.
+- **Accepted exception** (e.g., an audit-column `Current` default) — inline suppression with a reason, per the reference. Suppressions hide diagnostics, not graph edges: a cycle derived from suppressed edges still fires, anchored on an arbitrary participating edge — baseline that one in the todo file.
 
 ## 5. Report
 
