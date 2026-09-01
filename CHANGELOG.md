@@ -2,6 +2,11 @@
 
 ## master
 
+## 3.1.0 (2026-09-01)
+
+- Updated archspec guide (added `except:` section)
+- rails-hyperdrive now installs agents and commands
+
 ## 3.0.0 (2026-08-21)
 
 - **BREAKING:** We are now `layered-rails-skills` everywhere: the GitHub repo (was `palkan/skills`), and the Claude Code marketplace (was `palkan-skills`) — re-add the marketplace and reinstall the plugin: `/plugin marketplace add palkan/layered-rails-skills`, then `/plugin install layered-rails@layered-rails-skills`.

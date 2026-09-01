@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.name    = "layered-rails-skills"
   # Set to publish a gem-only release against unchanged plugin content; back to
   # nil on the next plugin bump.
-  packaging_revision = 1
+  packaging_revision = nil
   spec.version = [
     JSON.parse(
       File.read(File.expand_path("layered-rails/.claude-plugin/plugin.json", __dir__))

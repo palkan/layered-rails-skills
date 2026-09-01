@@ -1,10 +1,12 @@
 # ArchSpec
 
-Static architecture linter for Ruby and Rails — turns the layered architecture rules into executable checks that run in CI and on every (human- or agent-written) change. Reads source with Prism; no app boot.
+Static architecture linter for Ruby and Rails — turns the layered architecture rules into executable checks that run in CI and on every (human- or agent-written) change. Reads source statically (Prism, plus Rubydex constant/ancestry resolution since 1.1); no app boot.
 
 **GitHub**: https://github.com/crmne/archspec
 **Docs**: https://archspecrb.dev
 **Layer**: Dev/test tooling (enforces layer boundaries; not part of the runtime stack)
+
+This reference targets archspec **1.1+** (Ruby 3.2+). Version-sensitive spots are called out inline; the 1.0.x constant-capture caveat is in Tailoring.
 
 ## Contents
 
@@ -13,6 +15,7 @@ Static architecture linter for Ruby and Rails — turns the layered architecture
 - Reference Archspec.rb
 - What Each Block Enforces
 - Domain Services
+- Escape Hatches: `except:` Carve-Outs
 - Tailoring the Config
 - Adopting on an Existing Codebase
 - Advanced: Per-Folder Components
@@ -36,6 +39,8 @@ bundle exec archspec init      # generates Archspec.rb
 bundle exec archspec check     # run the checks (CI, hooks, after agent edits)
 bundle exec archspec explain app/models/user.rb   # how a file is classified
 ```
+
+Beyond `except:` (see Escape Hatches), 1.1 adds `because:` on any rule (carried into diagnostics), a `descendants_of:` component selector (transitive ancestry), and an "Analysis gaps" summary at the end of `check` output — unresolved constants, dynamic features, unknown receivers. Gaps are informational, not failures, but they mark blind spots: a `"#{provider.classify}DeployProvider".constantize` dependency is invisible to every dependency rule and lands there instead.
 
 ## Reference Archspec.rb
 
@@ -143,9 +148,55 @@ component(:misfiled_domain_services, in: %w[
 
 (As with vendor folders, expect companion `dependencies.allow` noise on files this matches until they move.)
 
+## Escape Hatches: `except:` Carve-Outs
+
+Component membership is **conjunctive**: every component a file belongs to has its rules checked independently, and a reference is checked against every component the *target* constant belongs to. Two consequences:
+
+1. You cannot grant a subset of a layer extra dependencies while its files remain in the layer — the layer's own allowlist still fires on their edges.
+2. A grant can only be as precise as the target's membership — if deliveries sit in the application layer *and* a `:notifications` component, allowing `:notifications` still trips the `:application` check.
+
+The mechanism for both (1.1+) is the `except:` option: re-declaring a component **merges** its spec, so a later `component :domain, except: ...` adds an exclusion to the preset's layer. Carve the subset out, declare it as its own component, and restate the layer discipline the carved files no longer inherit:
+
+```ruby
+# Workflows live under app/models/ but alone may trigger notifications.
+workflow_globs = %w[app/models/**/*_workflow.rb app/models/**/workflow.rb]
+component :domain, except: workflow_globs
+workflows = component :workflows, in: workflow_globs
+workflows.can_only_use :domain, :notifications, :query_objects
+
+# Restate the domain-layer discipline — carved-out files no longer inherit it
+workflows.cannot_reference_constants "Current"
+workflows.cannot_call :render, :redirect_to, :params, :session, :cookies, :flash, receiver: :none
+
+# Deliveries/mailers move OUT of the application layer into a standalone
+# component, so the grant above targets exactly them (consequence 2)
+component :notifications, in: %w[app/mailers/**/*.rb app/deliveries/**/*.rb]
+notifications.can_only_use :domain, :query_objects, :notifications
+
+# Top-ups: layers referencing the new components (e.g. subclassing
+# ApplicationWorkflow) need them allowlisted
+presentation.can_only_use :notifications, :workflows
+application.can_only_use :notifications, :workflows
+domain.can_only_use :workflows
+```
+
+The carved subset is outside the preset's `no_cycles among:` list, which is usually what you want (deliveries and models reference each other by design).
+
+**Reclassification beats suppression.** Before suppressing a `domain may not depend on application` finding, ask whether the dependency is misclassified rather than illegal. An external API client wrapper under `app/services/` that a model legitimately uses is infrastructure — and domain sits *above* infrastructure, so a single-file carve-out makes the edge legal with no suppression:
+
+```ruby
+architecture :layered, layers: {
+  # ...,
+  infrastructure: %w[app/clients/**/*.rb app/services/some_api_client.rb]
+}
+component :application, except: "app/services/some_api_client.rb"
+```
+
 ## Tailoring the Config
 
-- **Nested specializations.** `app/services/queries/` ≈ `app/queries/` — but don't carve it into `domain` with a more specific glob while `app/services/**/*.rb` stays in `application`: the files land in **both** layers, and since `can_only_use` checks every component a constant belongs to, models calling those queries get flagged (`domain may not depend on application`). Prefer renaming the folder to top-level `app/queries/`; keep a carve-out only when nothing in `domain` references it. Verify membership with `archspec explain`.
+- **Nested specializations.** `app/services/queries/` ≈ `app/queries/` — don't add a more specific glob to `domain` while `app/services/**/*.rb` stays in `application`: the files land in **both** layers, and since `can_only_use` checks every component a constant belongs to, models calling those queries get flagged (`domain may not depend on application`). Renaming the folder to top-level `app/queries/` is still the cleanest fix; otherwise carve properly with `component :application, except: "app/services/queries/**/*.rb"` so the files belong to exactly one layer. Verify membership with `archspec explain`.
+- **Constant capture on 1.0.x.** Before 1.1, a nested-style reopening (`class License` wrapping `class ExpirationJob` in `app/jobs/license/expiration_job.rb`) made the *jobs* file a definer of `License`, leaking the constant into that layer's component — unrelated references to `License` then flagged as depending on it. 1.1 ignores namespace-only reopenings (no superclass, body holding only nested class/module declarations). On 1.0.x the only fix is compact-style declarations (`class License::ExpirationJob`).
+- **Suppressions hide diagnostics, not edges.** An inline `archspec:disable` on a model's `SomeJob.perform_later` silences the `dependencies.allow` finding, but the edge stays in the graph — a cycle through it still fires. Cycle diagnostics also anchor on an *arbitrary* participating edge, often a perfectly legal one in an innocent file. For a cycle derived entirely from accepted, suppressed edges, baseline it in the todo file rather than chasing the anchor with a `dependencies.no_cycles` disable that breaks when the anchor moves.
 - **Models-first codebases.** With no `app/services/`, deep model namespaces carry orchestration; the layer map still works — but keep the `domain.cannot_call`/`cannot_reference_constants` rules, they're the teeth of the models-first caveat (no HTTP/LLM/job-enqueuing classes hiding under `app/models/`).
 - **Accepted `Current` exceptions** (audit-column defaults, overridable kwarg defaults) get inline suppressions with the rule id from the failure output:
 
@@ -163,6 +214,8 @@ todo "archspec_todo.yml"
 ```
 
 Entries are keyed by rule, path, and evidence, so they survive edits. Burn the file down as refactoring progresses (the layerification plan workflow's phases are natural checkpoints) and **never add entries to accommodate new code** — new violations are fixed in code, not hidden. When a check fails on agent-written changes, read the evidence first; `archspec explain` shows how the file was classified.
+
+Split accepted-forever debt from the burn-down backlog: point violations the team has decided to keep get inline `archspec:disable` comments with reasons (they document the decision at the site), the todo file holds what's still meant to be fixed — plus derived cycle diagnostics whose anchors make inline suppression fragile (see Tailoring). Reclassify before either (see Escape Hatches): a finding that survives an honest look at the layer map is debt; one that doesn't is a config fix.
 
 ## Advanced: Per-Folder Components
 
